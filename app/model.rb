@@ -1,9 +1,27 @@
 require "erb"
+require 'mongo'
+include Mongo
+
 
 class Captcha
   attr_accessor :sentence, :exclude
   def self.find(sentence, exclude)
+    client = MongoClient.new
+    captchas = client['db']['captchas']
+    item = captchas.find_one({ sentence: sentence, exclude: exclude })
+    puts item
+    if item
+      self.build(sentence, exclude)
+    else
+      nil
+    end
+  end
 
+  def self.remove(sentence, exclude)
+    client = MongoClient.new
+    captchas = client['db']['captchas']
+    item = captchas.remove(
+      { sentence: sentence, exclude: exclude }, { limit: 1})
   end
 
   def self.build(sentence, exclude) #to be replaced with find version (db)
@@ -22,9 +40,18 @@ class Captcha
       self.sentence = File.open("#{app_path}/../texts/#{num}", &:gets).strip
     end
     self.exclude = self.create_exclude
+
+    # Probably best to add a unique ID to db instead of search by sentence/excl
+    begin
+    client = MongoClient.new
+    captchas = client['db']['captchas']
+    captchas.insert({ sentence: self.sentence, exclude: self.exclude })
+  rescue Exception => e
+    puts e.message
+  end
   end
 
-  def word_freq 
+  def word_freq
     freq = Hash.new(0)
     words = self.sentence.split(/\W+/).map(&:downcase)
     words.each do |word|

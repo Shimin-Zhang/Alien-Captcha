@@ -24,16 +24,20 @@ class MatchCaptcha
   end
 
   def parse_request
-    self.captcha = Captcha.build(self.request["sentence"], self.request["exclude"])
-    exclude_set = Set.new(self.request[:exclude])
+    self.captcha = Captcha.find(self.request["sentence"], self.request["exclude"])
+    if self.captcha
+      exclude_set = Set.new(self.request[:exclude])
 
-    correct_answer = captcha.word_freq.select do |key, value|
-      ! exclude_set.include?(key)
+      correct_answer = captcha.word_freq.select do |key, value|
+        ! exclude_set.include?(key)
+      end
     end
-    if correct_answer  == self.request["answer"]
+    if !self.captcha
+      self.response[:status] = 404
+    elsif correct_answer  == self.request["answer"]
       self.response[:status] = 200
+      Captcha.remove(self.request["sentence"], self.request["exclude"])
     else
-      puts 'not equal'
       self.response[:status] = 400
     end
     self.response[:body] = nil

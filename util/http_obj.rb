@@ -27,7 +27,8 @@ end
 class HttpResponse
   STATUS = {
     200 => "OK",
-    400 => "Bad Request"
+    400 => "Bad Request",
+    404 => "Not Found"
   }
   attr_reader :response
 

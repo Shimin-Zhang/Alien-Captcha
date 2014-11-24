@@ -6,3 +6,4 @@ gem "sinatra-contrib"
 
 gem "json"
 gem "rspec"
+gem "mongo"
