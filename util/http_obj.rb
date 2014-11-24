@@ -1,6 +1,6 @@
 class HttpRequest
   def self.Build(socket)
-    request = Request.new
+    request = HttpRequest.new
     request_line = socket.gets.strip.split(' ')
     request.method = request_line[0] #Do not care about uri, for now
     while true
@@ -15,13 +15,19 @@ class HttpRequest
       body_length = request.params["Content-Length"].to_i
       request.body = socket.readpartial(body_length)
       #Only took an hour, might want to chunk it up like Mongrel at some pt
-      puts request.body
     end
+    request
   end
 
   attr_accessor :params, :method, :host, :resource_uri, :body
 
   def initialize
     self.params = {} #hash for constant speed lookup
+  end
+end
+
+class HttpResponse
+  def self.Build(response)
+
   end
 end
