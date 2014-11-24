@@ -6,6 +6,12 @@ class Captcha
 
   end
 
+  def self.build(sentence, exclude) #to be replaced with find version (db)
+    captcha = Captcha.new
+    captcha.sentence, captcha.exclude = sentence, exclude
+    captcha
+  end
+
   def initialize(random = false)
     if random
 
@@ -16,23 +22,21 @@ class Captcha
       self.sentence = File.open("#{app_path}/../texts/#{num}", &:gets).strip
     end
     self.exclude = self.create_exclude
-    puts self.exclude
   end
 
-  def word_freq(exclusion = []) #change exlusion to hash/set for better perform.
+  def word_freq 
     freq = Hash.new(0)
     words = self.sentence.split(/\W+/).map(&:downcase)
     words.each do |word|
       freq[word] += 1
     end
-    puts freq
     freq
   end
 
   def create_exclude
     word_freq = self.word_freq
     uniques = word_freq.keys
-    to_sample = uniques.length == 0 ? 0 : 1 + Random.rand(uniques.length)
+    to_sample = uniques.length == 1 ? 0 : Random.rand(uniques.length)
     uniques.sample(to_sample)
   end
 
@@ -40,6 +44,6 @@ class Captcha
     puts 'writting response'
     app_path =  File.expand_path(File.dirname(__FILE__))
     template = File.new("#{app_path}/../views/get.json.erb").read
-    puts ERB.new(template).result(binding)
+    ERB.new(template).result(binding)
   end
 end

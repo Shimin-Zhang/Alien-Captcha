@@ -6,3 +6,7 @@ resrouce = Net::HTTP.start(server_uri.hostname, server_uri.port) do |http|
   request.body = ("{'name': 'john'}")
   http.request(request)
 end
+
+describe "the word count captcha"
+
+end

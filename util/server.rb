@@ -8,11 +8,9 @@ class Server
     server = TCPServer.new(host, port)
     while true
       Thread.start(server.accept) do |socket| #Threads are less blocking
-        puts "new request received"
-        request = HttpRequest.Build(socket)
-        res = CaptchaApp.new(request)
-        response = "Hulk Smash!\n"
-        socket.puts response
+        request = HttpRequest.new(socket)
+        app = CaptchaApp.new(request)
+        socket.puts app.render
         socket.close
       end
     end

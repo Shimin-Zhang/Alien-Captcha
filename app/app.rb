@@ -1,7 +1,8 @@
 require_relative "../util/http_obj"
 require_relative "controller"
 class CaptchaApp
-  attr_reader :request, :response
+
+  attr_reader :request, :response, :controller
 
   def initialize(request)
     @request = request
@@ -10,10 +11,14 @@ class CaptchaApp
 
   def route
     if self.request.method == "GET"
-      @response = NewCaptcha.new
+      @controller = NewCaptcha.new
     else
-      @response = MatchCaptcha.new(self.request)
+      @controller = MatchCaptcha.new(self.request)
     end
-    HttpResponse.build(self.response)
   end
+
+  def render
+      HttpResponse.new(@controller.response).render
+  end
+
 end

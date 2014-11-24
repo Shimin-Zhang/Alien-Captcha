@@ -13,4 +13,13 @@ describe 'The Word Counting App' do
     expect(parsed_response).to have_key("text")
     expect(parsed_response).to have_key("exclude")
   end
+
+  it "sends reponse 200 if the correct response is submitted" do
+
+  end
+
+  it "sends 400 if incorrect numbers are submitted" do
+
+  end
+
 end
