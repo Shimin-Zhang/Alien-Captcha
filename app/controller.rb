@@ -7,7 +7,7 @@ class NewCaptcha
 
   def initialize
     self.response = {}
-    captcha = Captcha.new
+    captcha = Captcha.new(true)
     self.response[:body] = captcha.to_json
     self.response[:status] = 200
   end
@@ -26,11 +26,13 @@ class MatchCaptcha
   def parse_request
     self.captcha = Captcha.find(self.request["sentence"], self.request["exclude"])
     if self.captcha
-      exclude_set = Set.new(self.request[:exclude])
+      exclude_set = Set.new(self.request["exclude"])
 
       correct_answer = captcha.word_freq.select do |key, value|
         ! exclude_set.include?(key)
       end
+      puts correct_answer
+      puts self.request["answer"]
     end
     if !self.captcha
       self.response[:status] = 404

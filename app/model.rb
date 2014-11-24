@@ -20,6 +20,9 @@ class Captcha
   def self.remove(sentence, exclude)
     client = MongoClient.new
     captchas = client['db']['captchas']
+    puts "remove called"
+    puts sentence
+    puts exclude
     item = captchas.remove(
       { sentence: sentence, exclude: exclude }, { limit: 1})
   end
@@ -30,25 +33,20 @@ class Captcha
     captcha
   end
 
-  def initialize(random = false)
-    if random
+  def initialize(is_new = false)
+    num = Random.rand(6)
 
-    else
-      num = Random.rand(6)
-      #Should be an app wide env variable
-      app_path =  File.expand_path(File.dirname(__FILE__))
-      self.sentence = File.open("#{app_path}/../texts/#{num}", &:gets).strip
-    end
+    #Should be an app wide env variable
+    app_path =  File.expand_path(File.dirname(__FILE__))
+    self.sentence = File.open("#{app_path}/../texts/#{num}", &:gets).strip
     self.exclude = self.create_exclude
 
     # Probably best to add a unique ID to db instead of search by sentence/excl
-    begin
-    client = MongoClient.new
-    captchas = client['db']['captchas']
-    captchas.insert({ sentence: self.sentence, exclude: self.exclude })
-  rescue Exception => e
-    puts e.message
-  end
+    if is_new
+      client = MongoClient.new
+      captchas = client['db']['captchas']
+      captchas.insert({ sentence: self.sentence, exclude: self.exclude })
+    end
   end
 
   def word_freq

@@ -10,6 +10,7 @@ describe 'The Word Counting App' do
     expect(response.code).to eq("200")
     expect(response.message).to eq("OK")
     body = JSON.parse(response.body)
+    puts body
     expect(body.keys).to include('sentence')
     expect(body.keys).to include('exclude')
   end
@@ -17,7 +18,7 @@ describe 'The Word Counting App' do
   it "sends reponse 200 if the correct response is submitted" do
     response = Net::HTTP.get_response(uri)
     answer = get_answer(response)
-
+    puts answer
     Net::HTTP.start(uri.host, uri.port) do |http|
       new_response = http.request_post('/', answer.to_json)
       expect(new_response.code).to eq("200")
@@ -29,7 +30,6 @@ describe 'The Word Counting App' do
   it "sends 404 if we submit the correct answer again" do
     response = Net::HTTP.get_response(uri)
     answer = get_answer(response)
-
     Net::HTTP.start(uri.host, uri.port) do |http|
       new_response = http.request_post('/', answer.to_json)
       expect(new_response.code).to eq("200")
@@ -46,7 +46,7 @@ describe 'The Word Counting App' do
   it "sends 400 if incorrect numbers are submitted" do
     response = Net::HTTP.get_response(uri)
     answer = get_incorrect_answer(response)
-
+    puts answer
     Net::HTTP.start(uri.host, uri.port) do |http|
       new_response = http.request_post('/', answer.to_json)
       expect(new_response.code).to eq("400")
